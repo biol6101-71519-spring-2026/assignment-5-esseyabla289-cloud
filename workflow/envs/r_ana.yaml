@@ -1,0 +1,12 @@
+name: r_phy
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - r-base
+  - r-ape
+  - bioconductor-ggtree
+  - r-phytools
+  - r-tidyverse
+  - r-ggplot2
