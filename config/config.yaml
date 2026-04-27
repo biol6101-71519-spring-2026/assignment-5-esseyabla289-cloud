@@ -4,19 +4,19 @@
 # 
 # Recommended configuration structure:
 #
-# genes:
-#   - gene1
-#   - gene2
-#   - gene3
+genes:
+  - COI
+  - CYTB
+  - BRCA1
+  - RAG2
+input_dir: "../data/gene_seqs/"  # Directory containing input gene sequences
 #
-# input_dir: "path/to/your/fasta/files"
+alignment:
+  method: "auto"  # MAFFT alignment method
+  trim_method: "automated1"  # trimAl method
 #
-# alignment:
-#   method: "auto"  # MAFFT alignment method
-#   trim_method: "automated1"  # trimAl method
-#
-# phylogeny:
-#   bootstrap: 1000
-#   threads: 4
+phylogeny:
+  bootstrap: 1000
+  threads: 4
 #
 # Add additional parameters as needed for your workflow

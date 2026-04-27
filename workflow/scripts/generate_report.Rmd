@@ -1,0 +1,115 @@
+---
+title: "Phylogenetic Analysis Report"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+    code_folding: hide
+params:
+  rf_distances: NULL
+  topo_summary: NULL
+  concordance: NULL
+  model_summary: NULL
+  alignment_summary: NULL
+  concat_tree: NULL
+  sp_tree: NULL
+  coalescent_tree: NULL
+  genes: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+## Alignment Summary
+
+```{r debug, echo=TRUE}
+message("alignment_summary path: ", params$alignment_summary)
+message("file exists: ", file.exists(params$alignment_summary))
+message("working dir: ", getwd())
+message("absolute path: ", normalizePath(params$alignment_summary, mustWork = FALSE))
+```
+
+```{r alignment}
+if (!is.null(params$alignment_summary) && file.exists(params$alignment_summary)) {
+  cat(readLines(params$alignment_summary), sep = "\n")
+} else {
+  cat("Alignment summary file not found:", params$alignment_summary)
+}
+```
+
+## Model Selection
+
+```{r models}
+if (!is.null(params$model_summary) && file.exists(params$model_summary)) {
+  cat(readLines(params$model_summary), sep = "\n")
+} else {
+  cat("Model summary file not found:", params$model_summary)
+}
+```
+
+## Tree Comparison
+
+### Robinson-Foulds Distances
+
+```{r rf}
+if (!is.null(params$rf_distances) && file.exists(params$rf_distances)) {
+  cat(readLines(params$rf_distances), sep = "\n")
+} else {
+  cat("RF distances file not found:", params$rf_distances)
+}
+```
+
+### Topological Summary
+
+```{r topo}
+if (!is.null(params$topo_summary) && file.exists(params$topo_summary)) {
+  cat(readLines(params$topo_summary), sep = "\n")
+} else {
+  cat("Topological summary file not found:", params$topo_summary)
+}
+```
+
+### Concordance Analysis
+
+```{r concordance}
+if (!is.null(params$concordance) && file.exists(params$concordance)) {
+  cat(readLines(params$concordance), sep = "\n")
+} else {
+  cat("Concordance analysis file not found:", params$concordance)
+}
+```
+
+## Trees
+
+### Concatenated Tree
+
+```{r concat-tree}
+if (!is.null(params$concat_tree) && file.exists(params$concat_tree)) {
+  cat(readLines(params$concat_tree), sep = "\n")
+} else {
+  cat("Concatenated tree file not found:", params$concat_tree)
+}
+```
+
+### Coalescent Species Tree
+
+```{r coalescent-tree}
+if (!is.null(params$coalescent_tree) && file.exists(params$coalescent_tree)) {
+  cat(readLines(params$coalescent_tree), sep = "\n")
+} else {
+  cat("Coalescent tree file not found:", params$coalescent_tree)
+}
+```
+
+## Gene List
+
+```{r genes}
+if (!is.null(params$genes)) {
+  cat(paste(params$genes, collapse = "\n"))
+} else {
+  cat("No genes provided.")
+}
+```

@@ -1,0 +1,7 @@
+name: tree_build
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - astral-tree
