@@ -39,10 +39,28 @@ rule all:
         "../results/report/phylogenetic_analysis_report.html",
 
 
+# Pre-processing: renamed FASTA headers from accession numbers to species names
+# so that all gene trees share consistent tip labels (required by ASTRAL and
+# for meaningful concatenated-tree taxa).
+rule rename_fasta_headers:
+    input:
+        config["input_dir"] + "{gene}.fasta"
+    output:
+        "../results/renamed_seqs/{gene}.fasta"
+    params:
+        taxa_file="../data/taxa.txt"
+    conda:
+        "envs/python.yaml"
+    log:
+        "../log/python/rename_headers_{gene}.log"
+    script:
+        "scripts/rename_headers.py"
+
+
 #Task 1: Sequence Alignment with mafft
 rule mafft_alignment:
     input:
-        fasta=config["input_dir"] + "{gene}.fasta", 
+        fasta="../results/renamed_seqs/{gene}.fasta"
     output:
         aln = "../results/alignments/raw/{gene}.aln",
     params:
@@ -254,11 +272,11 @@ rule iqtree_supermatrix_tree:
 rule compare_trees:
     input:
         gene_trees=expand("../results/trees/individual/{gene}.treefile", gene=GENES),
-        coalescent_tree="../results/trees/coalescent/species_tree.treefile",   # ← renamed
-        concat_tree="../results/trees/concatenated/concatenated.treefile",     # ← renamed
+        coalescent_tree="../results/trees/coalescent/species_tree.treefile",   
+        concat_tree="../results/trees/concatenated/concatenated.treefile",   
     output:
         rf_distances="../results/tree_comparison/robinson_foulds_distances.txt",
-        topo_summary="../results/tree_comparison/topological_summary.txt",     # ← renamed
+        topo_summary="../results/tree_comparison/topological_summary.txt",    
     params:
         genes=GENES,
     conda:
@@ -292,7 +310,8 @@ rule visualize_gene_tree:
         pdf="../results/visualizations/{gene}_tree.pdf"
     params:
         mode="gene_tree",
-        title=lambda w: f"{w.gene} Gene Tree"
+        title=lambda w: f"{w.gene} Gene Tree",
+        fasta_dir=config["input_dir"]
     conda:
         "envs/r_ana.yaml"
     log:
@@ -310,7 +329,8 @@ rule visualize_coalescent_tree:
     params:
         mode="species_tree",
         method="coalescent",
-        title="Coalescent Species Tree (ASTRAL)"
+        title="Coalescent Species Tree (ASTRAL)",
+        fasta_dir=config["input_dir"]
     conda:
         "envs/r_ana.yaml"
     log:
@@ -327,7 +347,8 @@ rule visualize_concatenated_tree:
     params:
         mode="species_tree",
         method="concatenated",
-        title="Supermatrix Species Tree (IQ-TREE)"
+        title="Supermatrix Species Tree (IQ-TREE)",
+        fasta_dir=config["input_dir"]
     conda:
         "envs/r_ana.yaml"
     log:
@@ -341,11 +362,14 @@ rule visualize_comparison:
     input:
         coalescent="../results/trees/coalescent/species_tree.treefile",
         concatenated="../results/trees/concatenated/concatenated.treefile",
-        rf_distances="../results/tree_comparison/robinson_foulds_distances.txt"
+        rf_distances="../results/tree_comparison/robinson_foulds_distances.txt",
+        astral_input="../results/trees/coalescent/astral_input.tre",
+        partitions="../results/concatenated/partition_info.txt"
     output:
         comparison="../results/visualizations/method_comparison.pdf"
     params:
-        mode="comparison"
+        mode="comparison",
+        fasta_dir=config["input_dir"]
     conda:
         "envs/r_ana.yaml"
     log:
